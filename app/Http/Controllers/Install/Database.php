@@ -32,7 +32,7 @@ class Database extends Controller
      */
     public function store(Request $request)
     {
-        $connection = config('database.default','mysql');
+        $connection = config('database.default','pgsql');
 
         $host     = $request['hostname'];
         $port     = config("database.connections.$connection.port", '3306');
@@ -40,6 +40,8 @@ class Database extends Controller
         $username = $request['username'];
         $password = $request['password'];
         $prefix   = config("database.connections.$connection.prefix", null);
+
+        // dd($host, $port, $database, $username, $password, $prefix);
 
         // Check database connection
         if (!Installer::createDbTables($host, $port, $database, $username, $password, $prefix)) {

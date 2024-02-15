@@ -91,7 +91,7 @@ _ide_helper_models.php
 .phpstorm.meta.php
 /storage/debugbar/*
 .phpunit.result.cache
-modules/*
+# modules/*
 !modules/.gitkeep
 .laravelstatsrc
 .DS_Store

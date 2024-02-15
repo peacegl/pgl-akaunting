@@ -1,0 +1,9 @@
+<x-form.group.select
+    :name="$name"
+    :label="$label"
+    :options="$options"
+    :selected="$selected"
+    :required="$required"
+    :group="$group"
+    :form-group-class="$formGroupClass"
+/>

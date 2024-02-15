@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -91,8 +91,9 @@ return [
             'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => env('DB_PREFIX', 'ak_'),
+            'schema' => env('DB_SCHEMA', 'pglsystem'),
             'prefix_indexes' => true,
-            'search_path' => 'public',
+            'search_path' => 'pglsystem',
             'sslmode' => 'prefer',
         ],
 

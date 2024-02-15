@@ -181,13 +181,14 @@ class Installer
      */
     public static function isDbValid($host, $port, $database, $username, $password)
     {
+        \Illuminate\Support\Facades\Log::info("Database connection parameters - Host: $host, Port: $port, Database: $database, Username: $username, Password: $password");
         Config::set('database.connections.install_test', [
             'host'      => $host,
             'port'      => $port,
             'database'  => $database,
             'username'  => $username,
             'password'  => $password,
-            'driver'    => $connection = config('database.default', 'mysql'),
+            'driver'    => $connection = config('database.default', 'pgsql'),
             'charset'   => config("database.connections.$connection.charset", 'utf8mb4'),
         ]);
 
@@ -217,7 +218,7 @@ class Installer
             'DB_PREFIX'     =>  $prefix,
         ]);
 
-        $con = config('database.default', 'mysql');
+        $con = config('database.default', 'pgsql');
 
         // Change current connection
         $db = Config::get('database.connections.' . $con);

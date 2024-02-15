@@ -3,8 +3,8 @@
 return [
 
     'version'               => 'Version',
-    'powered'               => 'Powered By Akaunting',
-    'link'                  => 'https://akaunting.com',
-    'software'              => 'Free Accounting Software',
+    'powered'               => 'Powered By Peace Global Logistics',
+    'link'                  => 'https://peacegl.com',
+    'software'              => 'Accounting Software',
 
 ];
