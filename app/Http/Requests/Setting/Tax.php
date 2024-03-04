@@ -18,7 +18,7 @@ class Tax extends FormRequest
             $id = is_numeric($this->tax) ? $this->tax : $this->tax->getAttribute('id');
             $enabled = 'integer|boolean';
         } else {
-            $id = null;
+            $id = 'null';
             $enabled = 'nullable';
         }
 

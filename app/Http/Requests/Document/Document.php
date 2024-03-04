@@ -31,7 +31,7 @@ class Document extends FormRequest
 
             $id = is_numeric($this->$model) ? $this->$model : $this->{$model}->getAttribute('id');
         } else {
-            $id = null;
+            $id = 'null';
         }
 
         if ($this->files->get('company_logo')) {

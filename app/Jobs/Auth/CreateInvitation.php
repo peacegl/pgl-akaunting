@@ -40,7 +40,6 @@ class CreateInvitation extends Job
             ]);
 
             $notification = new Notification($this->invitation);
-
             try {
                 $this->dispatch(new NotifyUser($this->user, $notification));
             } catch (TransportException $e) {

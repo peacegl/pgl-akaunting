@@ -34,7 +34,7 @@ class Account extends FormRequest
         if ($this->getMethod() == 'PATCH') {
             $id = $this->chart_of_account->getAttribute('id');
         } else {
-            $id = null;
+            $id = 'null';
         }
 
         return [

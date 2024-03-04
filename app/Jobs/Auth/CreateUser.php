@@ -76,12 +76,11 @@ class CreateUser extends Job implements HasOwner, HasSource, ShouldCreate
             }
 
             if ($this->shouldSendInvitation()) {
-                $this->dispatch(new CreateInvitation($this->model));
+                    $this->dispatch(new CreateInvitation($this->model));
             }
         });
 
         $this->clearPlansCache();
-
         event(new UserCreated($this->model, $this->request));
 
         return $this->model;

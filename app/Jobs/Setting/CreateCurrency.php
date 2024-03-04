@@ -15,7 +15,6 @@ class CreateCurrency extends Job implements HasOwner, HasSource, ShouldCreate
     public function handle(): Currency
     {
         event(new CurrencyCreating($this->request));
-
         // Force the rate to be 1 for default currency
         if ($this->request->get('default_currency')) {
             $this->request['rate'] = '1';

@@ -17,7 +17,7 @@ class Currency extends FormRequest
         if (in_array($this->getMethod(), ['PATCH', 'PUT'])) {
             $id = is_numeric($this->currency) ? $this->currency : $this->currency->getAttribute('id');
         } else {
-            $id = null;
+            $id = 'null';
         }
 
         // Get company id

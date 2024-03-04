@@ -43,7 +43,6 @@ class Currencies extends Controller
     {
         // Get current currencies
         $current = Currency::pluck('code')->toArray();
-
         // Prepare codes
         $codes = [];
         $currencies = MoneyCurrency::getCurrencies();

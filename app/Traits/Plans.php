@@ -32,21 +32,22 @@ trait Plans
 
     public function getAnyActionLimitOfPlan(): object
     {
-        $user_limit = $this->getUserLimitOfPlan();
-        $company_limit = $this->getCompanyLimitOfPlan();
-        $invoice_limit = $this->getInvoiceLimitOfPlan();
+        // $user_limit = $this->getUserLimitOfPlan();
+        // $company_limit = $this->getCompanyLimitOfPlan();
+        // $invoice_limit = $this->getInvoiceLimitOfPlan();
 
-        if (! $user_limit->action_status) {
-            return $user_limit;
-        }
+        //Temp solution to limited user, invoice and company limit.
+        // if (! $user_limit->action_status) {
+        //     return $user_limit;
+        // }
 
-        if (! $company_limit->action_status) {
-            return $company_limit;
-        }
+        // if (! $company_limit->action_status) {
+        //     return $company_limit;
+        // }
 
-        if (! $invoice_limit->action_status) {
-            return $invoice_limit;
-        }
+        // if (! $invoice_limit->action_status) {
+        //     return $invoice_limit;
+        // }
 
         $limit = new \stdClass();
         $limit->action_status = true;
