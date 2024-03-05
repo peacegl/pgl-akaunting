@@ -21,7 +21,7 @@ class Ledger extends Model
 
     protected $table = 'double_entry_ledger';
 
-    protected $fillable = ['company_id', 'account_id', 'ledgerable_id', 'ledgerable_type', 'issued_at', 'entry_type', 'debit', 'credit', 'notes', 'created_from', 'created_by'];
+    protected $fillable = ['company_id', 'account_id', 'ledgerable_id', 'ledgerable_type', 'issued_at', 'entry_type', 'debit', 'credit', 'notes', 'created_from', 'created_by', 'reference'];
 
     /**
      * The relationships that should always be loaded.

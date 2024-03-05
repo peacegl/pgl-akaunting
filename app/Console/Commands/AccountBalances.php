@@ -40,13 +40,7 @@ class AccountBalances extends Command
         if ($pglAccount) {
 
             $results = \DB::select('SELECT 
-                    total_invoice_amount,
-                    COALESCE(total_invoice_amount, 0) - COALESCE(total_discount, 0) - COALESCE(total_payment_received, 0) AS remaining_amount
-                FROM (
-                    SELECT 
-                        SUM(invoice_amount) AS total_invoice_amount,
-                        SUM(DISCOUNT) AS total_discount,
-                        SUM(payment_received) AS total_payment_received
+                        SUM(invoice_amount) AS total_invoice_amount
                     FROM (
                         SELECT 
                             INVOICES.ID,
@@ -83,8 +77,7 @@ class AccountBalances extends Command
                         GROUP BY 
                             invoices.id, invoices.invoice_number, containers.container_number, invoices.invoice_number, 
                             invoices.status, invoices.updated_at, invoice_due_date, invoice_date, invoices.id, received_date
-                    ) AS subquery
-                ) AS totals;
+                    ) AS subquery;
             ');
 
             $pglAccountJournelEntry = $this->addJournelEntry($results[0]->total_invoice_amount);                                       
@@ -97,54 +90,18 @@ class AccountBalances extends Command
         if ($mixAccount) {
 
             $mixResults = \DB::select('SELECT 
-                    total_invoice_amount,
-                    COALESCE(total_invoice_amount, 0) - COALESCE(total_discount, 0) - COALESCE(total_payment_received, 0) AS remaining_amount
-                FROM (
-                    SELECT 
-                        SUM(invoice_amount) AS total_invoice_amount,
-                        SUM(DISCOUNT) AS total_discount,
-                        SUM(payment_received) AS total_payment_received
-                    FROM (
-                        SELECT 
-                            INVOICES.ID,
-                            INVOICES.DISCOUNT,
-                            CAST(COALESCE(invoices.payment_received, 0) AS FLOAT) AS payment_received,
-                            CAST(
-                                SUM(
-                                    COALESCE(vehicle_costs.towing_cost, 0) +
-                                    COALESCE(vehicle_costs.dismantal_cost, 0) +
-                                    COALESCE(vehicle_costs.ship_cost, 0) +
-                                    COALESCE(vehicle_costs.storage_pod_cost, 0) +
-                                    CASE WHEN invoices.title_charge_visible = TRUE THEN COALESCE(vehicle_costs.storage_pod_cost, 0) ELSE 0 END +
-                                    COALESCE(vehicle_costs.other_cost, 0)
-                                ) AS FLOAT
-                            ) AS invoice_amount
-                        FROM 
-                            invoices 
-                        JOIN 
-                            CONTAINERS ON INVOICES.CONTAINER_ID = CONTAINERS.ID
-                        LEFT JOIN 
-                            VEHICLES ON VEHICLES.CONTAINER_ID = CONTAINERS.ID
-                        LEFT JOIN 
-                            VEHICLE_COSTS ON VEHICLE_COSTS.VEHICLE_ID = VEHICLES.ID
-                        LEFT JOIN 
-                            COMPANIES ON INVOICES.COMPANY_ID = COMPANIES.ID
-                        LEFT JOIN 
-                            MIX_SHIPPING_INVOICES ON MIX_SHIPPING_INVOICES.CONTAINER_ID = CONTAINERS.ID
-                        LEFT JOIN 
-                            USERS ON INVOICES.CREATED_BY = USERS.ID
-                        WHERE 
-                            INVOICES.STATUS = \'open\'
-                            AND INVOICES.DELETED_AT IS NULL
-                            AND MIX_SHIPPING_INVOICES.CONTAINER_ID IS NULL 
-                        GROUP BY 
-                            invoices.id, invoices.invoice_number, containers.container_number, invoices.invoice_number, 
-                            invoices.status, invoices.updated_at, invoice_due_date, invoice_date, invoices.id, received_date
-                    ) AS subquery
-                ) AS totals;
+                SUM(INVOICE_AMOUNT) AS total_mix_invoice_amount
+                FROM
+                    (SELECT CAST(SUM(COALESCE(MV.FREIGHT,0) + COALESCE(MV.TOW_AMOUNT,0)) AS FLOAT) AS INVOICE_AMOUNT
+                        FROM MIX_SHIPPING_INVOICES MI
+                        INNER JOIN MIX_SHIPPING_VEHICLES MV ON MV.MIX_SHIPPING_INVOICE_ID = MI.ID
+                        WHERE MI.STATUS = \'open\'
+                            AND MI.DELETED_AT IS NULL
+                        GROUP BY MI.ID) 
+                AS SUBQUERY;
             ');
 
-            $mixAccountJournelEntry = $this->addJournelEntry($mixResults[0]->total_invoice_amount, 'Automatic Mix-Invoice');
+            $mixAccountJournelEntry = $this->addJournelEntry($mixResults[0]->total_mix_invoice_amount, 'Automatic Mix-Invoice');
             $this->addLedgerEntry($mixAccountJournelEntry, $mixAccount, 'Automatic Mix-Invoice');
         }
     }
@@ -200,7 +157,7 @@ class AccountBalances extends Command
     protected function addLedgerEntry($journal, $account, $ref = 'Automatic Open-Invoice')
     {
         $ledger = $this->getLedgerByRef($ref);
-        
+
         if (! $ledger) {
             $ledger = Ledger::create([
                 'company_id'        => '1',
@@ -208,8 +165,8 @@ class AccountBalances extends Command
                 'ledgerable_type'   => 'Modules\DoubleEntry\Models\Journal',
                 'entry_type'        => 'item',
                 'issued_at'         =>  Date::now()->format('Y-m-d'),
-                'reference'         => 'Automatic Mix-Invoice',
-                'account_id'        => $account->id,
+                'reference'         =>  $ref,
+                'account_id'        =>  $account->id,
                 'debit'              => $journal->amount,
             ]);
             event(new CreateLedger($ledger));
